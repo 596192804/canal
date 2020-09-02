@@ -1,6 +1,8 @@
 package com.alibaba.otter.canal.protocol;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -145,6 +147,21 @@ public class FlatMessage implements Serializable {
 
     public void setEs(Long es) {
         this.es = es;
+    }
+
+    public List<FlatMessageOnlyData> toFlatMessageOnlyData() {
+        List<FlatMessageOnlyData> result = new ArrayList<>();
+        if (this.data == null) {
+            return result;
+        }
+        if (this.type.toUpperCase().equals("INSERT")) {
+            for (Map<String, String> sourceData : this.data) {
+                FlatMessageOnlyData mesg = new FlatMessageOnlyData();
+                mesg.setData(new LinkedHashMap<>(sourceData));
+                result.add(mesg);
+            }
+        }
+        return result;
     }
 
     @Override

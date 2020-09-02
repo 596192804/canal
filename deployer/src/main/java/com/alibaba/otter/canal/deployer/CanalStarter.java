@@ -198,6 +198,10 @@ public class CanalStarter {
         if (!StringUtils.isEmpty(flatMessage)) {
             mqProperties.setFlatMessage(Boolean.valueOf(flatMessage));
         }
+        String flatMessageOnlyData = CanalController.getProperty(properties, CanalConstants.CANAL_MQ_FLATMESSAGE_ONLYDATA);
+        if (!StringUtils.isEmpty(flatMessageOnlyData)) {
+            mqProperties.setFlatMessageOnlyData(Boolean.valueOf(flatMessageOnlyData));
+        }
         String compressionType = CanalController.getProperty(properties, CanalConstants.CANAL_MQ_COMPRESSION_TYPE);
         if (!StringUtils.isEmpty(compressionType)) {
             mqProperties.setCompressionType(compressionType);

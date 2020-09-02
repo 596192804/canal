@@ -8,6 +8,7 @@ import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import com.alibaba.otter.canal.protocol.FlatMessageOnlyData;
 import org.apache.commons.lang.StringUtils;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
@@ -161,18 +162,38 @@ public class CanalKafkaProducer implements CanalMQProducer {
                         for (int i = 0; i < length; i++) {
                             FlatMessage flatMessagePart = partitionFlatMessage[i];
                             if (flatMessagePart != null) {
-                                records.add(new ProducerRecord<String, String>(topicName,
-                                    i,
-                                    null,
-                                    JSON.toJSONString(flatMessagePart, SerializerFeature.WriteMapNullValue)));
+                                if (!kafkaProperties.getFlatMessageOnlyData()) {
+                                    records.add(new ProducerRecord<String, String>(topicName,
+                                            i,
+                                            null,
+                                            JSON.toJSONString(flatMessagePart, SerializerFeature.WriteMapNullValue)));
+                                } else {
+                                    List<FlatMessageOnlyData> recordMesgs = flatMessagePart.toFlatMessageOnlyData();
+                                    for (FlatMessageOnlyData msg : recordMesgs) {
+                                        records.add(new ProducerRecord<String, String>(topicName,
+                                                i,
+                                                null,
+                                                JSON.toJSONString(msg.getData(), SerializerFeature.WriteMapNullValue)));
+                                    }
+                                }
                             }
                         }
                     } else {
                         final int partition = canalDestination.getPartition() != null ? canalDestination.getPartition() : 0;
-                        records.add(new ProducerRecord<String, String>(topicName,
-                            partition,
-                            null,
-                            JSON.toJSONString(flatMessage, SerializerFeature.WriteMapNullValue)));
+                        if (!kafkaProperties.getFlatMessageOnlyData()) {
+                            records.add(new ProducerRecord<String, String>(topicName,
+                                    partition,
+                                    null,
+                                    JSON.toJSONString(flatMessage, SerializerFeature.WriteMapNullValue)));
+                        } else {
+                            List<FlatMessageOnlyData> recordMesgs = flatMessage.toFlatMessageOnlyData();
+                            for (FlatMessageOnlyData msg : recordMesgs) {
+                                records.add(new ProducerRecord<String, String>(topicName,
+                                        partition,
+                                        null,
+                                        JSON.toJSONString(msg.getData(), SerializerFeature.WriteMapNullValue)));
+                            }
+                        }
                     }
 
                     // 每条记录需要flush

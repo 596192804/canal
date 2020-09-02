@@ -21,6 +21,7 @@ public class MQProperties {
     private int        canalBatchSize         = 50;
     private Long       canalGetTimeout        = 100L;
     private boolean    flatMessage            = true;
+    private boolean    flatMessageOnlyData    = false;
     private String     compressionType        = "none";
     private String     acks                   = "all";
     private String     aliyunAccessKey        = "";
@@ -154,6 +155,14 @@ public class MQProperties {
 
     public void setFlatMessage(boolean flatMessage) {
         this.flatMessage = flatMessage;
+    }
+
+    public boolean getFlatMessageOnlyData() {
+        return flatMessageOnlyData;
+    }
+
+    public void setFlatMessageOnlyData(boolean flatMessage) {
+        this.flatMessageOnlyData = flatMessage;
     }
 
     public boolean isFilterTransactionEntry() {
